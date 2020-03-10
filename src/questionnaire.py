@@ -191,8 +191,14 @@ class QuestionWidget(QtWidgets.QWidget):
 
     def open_image(self):
         fig_file = self.img_fpaths[self.current_img]
-        args = ['xdg-open', fig_file]
-        self.viewer = subprocess.Popen(args, shell=False)
+
+        # use these lines to open in Preview on Mac
+        export_command = "open "+fig_file
+        self.viewer = subprocess.Popen(export_command, shell=True, stdout=subprocess.PIPE)
+
+        # use these lines to open in Linux
+        #args = ['xdg-open', fig_file]
+        #self.viewer = subprocess.Popen(args, shell=False)
         if not self.viewer.returncode is None:
             error_dialog = QtWidgets.QErrorMessage(parent=self)
             error_dialog.setModal(True)
