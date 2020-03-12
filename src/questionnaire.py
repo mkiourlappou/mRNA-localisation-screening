@@ -223,7 +223,11 @@ class QuestionWidget(QtWidgets.QWidget):
         # Close the image viewer to prevent situation where the users
         # ends up with more than one image to score open and
         # accidentally scores the wrong one.
-        self.viewer.terminate()
+
+        #self.viewer.terminate()
+        export_command = """osascript -e 'quit app "PREVIEW"'"""
+        subprocess.Popen(export_command, shell=True, stdout=subprocess.PIPE)
+        
         self.next_image()
 
     def next_image(self):
@@ -274,6 +278,9 @@ def main(argv):
     args = parse_arguments(app.arguments())
     questions = read_questions(args.questions_fpath)
     validate_questions(questions)
+    
+    # conditional statement to avoid opening images that have already been scored
+    img_fpaths = [x for x in args.img_fpaths if os.path.splitext(os.path.basename(x))[0]+".pickle" not in os.listdir(args.save_dir)]
 
     window = QuestionWindow(questions, args.save_dir, args.img_fpaths)
     window.show()
