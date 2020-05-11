@@ -22,29 +22,14 @@
 ## FORMAT OF QUESTIONS FILE
 ##
 ##   The questions file is a python file with a QUESTIONS variable.
-##    This QUESTIONS variable must be a list of objects subclassing
-##   QuestionWidget (see source code).  There are CheckQuestion,
-##   RadioQuestion, and TextQuestion:
+##   This QUESTIONS variable must be a list, of tuples with two
+##   elements.  Each tuple defines an individual question.
 ##
-##       CheckQuestion provides a question with multiple answers with
-##           the choice of selecting multiple ones.
-##
-##       RadioQuestion provides a question with multiple answers with
-##           the possibility of selecting only one.
-##
-##       TextQuestion provides a question and a box to type any
-##           answer.
-##
-##   For example:
-##
-##       QUESTIONS = [
-##           RadioQuestion('Level of expression',
-##                         ('none', 'low', 'high')),
-##           TextQuestion('What is the problem on this image?',
-##                        'This is the initial answer text'),
-##           CheckQuestion('How is the distribution?',
-##                         ('Punctate', 'Diffuse', 'Nuclear')),
-##       ]
+##   The first element in the question tuple must be a string and is
+##   the text for the actual question.  The second element in the
+##   tuple specifies the answer type and its initial value: if it is a
+##   string then the answer is a text box; if it is a tuple of strings
+##   then it is a group of radio buttons.
 
 import argparse
 import collections.abc
@@ -96,47 +81,15 @@ class QuestionWidget(QtWidgets.QWidget):
     def reset(self) -> None:
         raise NotImplementedError()
 
-#class SelectQuestion(QuestionWidget):
-#    """QuestionWidget for group of radio buttons."""
-#    def __init__(self, question: str, options: typing.Sequence[str],
-#                 *args, **kwargs) -> None:
-#        super().__init__(question, *args, **kwargs)
-#        self._answer = QtWidgets.QButtonGroup(parent=self)
-#
-#        for i, option in enumerate(options):
-#            button = QtWidgets.QRadioButton(text=option, parent=self)
-#            # By default, select first option.  We need to
-#            # start with one select otherwise we may end in a
-#            # state where none is selected.
-#            if i == 0:
-#                button.setChecked(True)
-#            self._answer.addButton(button)
-#
-#        layout = QtWidgets.QVBoxLayout()
-#        layout.addWidget(self._question)
-#        button_box = QtWidgets.QHBoxLayout()
-#        for button in self._answer.buttons():
-#            button_box.addWidget(button)
-#        button_box.addStretch() # left align buttons
-#        layout.addLayout(button_box)
-#        self.setLayout(layout)
-#
-#    def to_serializable(self) -> typing.Tuple[str, str]:
-#        return (self._question.text(),
-#                self._answer.checkedButton().text())
-#
-#    def reset(self) -> None:
-#        self._answer.buttons()[0].setChecked(True)
-
 class SelectQuestion(QuestionWidget):
-    """QuestionWidget for group of checkboxes."""
+    """QuestionWidget for group of radio buttons."""
     def __init__(self, question: str, options: typing.Sequence[str],
                  *args, **kwargs) -> None:
         super().__init__(question, *args, **kwargs)
         self._answer = QtWidgets.QButtonGroup(parent=self)
 
         for i, option in enumerate(options):
-            button = QtWidgets.QCheckBox(text=option, parent=self)
+            button = QtWidgets.QRadioButton(text=option, parent=self)
             # By default, select first option.  We need to
             # start with one select otherwise we may end in a
             # state where none is selected.
@@ -274,7 +227,7 @@ class QuestionWidget(QtWidgets.QWidget):
         #self.viewer.terminate()
         export_command = """osascript -e 'quit app "PREVIEW"'"""
         subprocess.Popen(export_command, shell=True, stdout=subprocess.PIPE)
-
+        
         self.next_image()
 
     def next_image(self):
@@ -325,7 +278,7 @@ def main(argv):
     args = parse_arguments(app.arguments())
     questions = read_questions(args.questions_fpath)
     validate_questions(questions)
-
+    
     # conditional statement to avoid opening images that have already been scored
     img_fpaths = [x for x in args.img_fpaths if os.path.splitext(os.path.basename(x))[0]+".pickle" not in os.listdir(args.save_dir)]
 
