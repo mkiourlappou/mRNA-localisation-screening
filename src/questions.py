@@ -1,7 +1,7 @@
 QUESTIONS = [
 ('What is the level of RNA expression?', ('None', 'Low', 'Moderate', 'High')),
 ('What is the level of protein expression?', ('None', 'Low', 'Moderate', 'High')),
-('What is the distribution of expression?', ('Punctate', 'Diffuse', 'Large aggregations', 'Nuclear', 'Cytoplasmic', 'Neuroblasts', 'Subset of cells', 'Other')),
+('What is the distribution of expression?', ('Ilan1', 'Ilan2', 'Ilan3')),
 ('What patterns does the RNA make?', ('Evenly scattered', 'Single transcripts', 'Nuclear', 'Transcription foci', 'More in some cells than others', 'Other', 'None')),
 ('What patterns does the protein make?', ('Punctate', 'Nuclear', 'Cell edges', 'Muscle fibres', 'Diffuse', 'Other', 'None')),
 ('Nascent transcript level', ('None', 'Low', 'Moderate', 'High')),
